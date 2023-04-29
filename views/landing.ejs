@@ -3,7 +3,7 @@
 <%- include ("./dash_include/HEADER_GEN.ejs") %>
 
   <main id="main">
-
+<% if(prop) {%>
     <!-- ======= Intro Single ======= -->
     <section class="intro-single">
       <div class="container">
@@ -154,7 +154,8 @@
           
         </div>
       </div>
-    </section><!-- End Property Single-->
+    </section>
+    <% } %><!-- End Property Single-->
 
   </main><!-- End #main -->
 

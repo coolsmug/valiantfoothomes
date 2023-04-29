@@ -4,7 +4,7 @@
 
   <!-- ======= Intro Section ======= -->
   <div class="intro intro-carousel swiper position-relative">
-
+    <% if(property) {%>
     <div class="swiper-wrapper">
       <% property.forEach(prop => { %>
       <div class="swiper-slide carousel-item-a intro-item bg-image" style="background-image: url(data:<%= prop.img.contentType %>;base64,<%= prop.img.data.toString('base64') %>)">
@@ -36,10 +36,11 @@
     </div>
     <div class="swiper-pagination"></div>
   </div><!-- End Intro Section -->
-
+<% } %>
   <main id="main">
 
     <!-- ======= Services Section ======= -->
+    
     <section class="section-services section-t8">
       <div class="container">
         <div class="row">
@@ -51,6 +52,7 @@
             </div>
           </div>
         </div>
+        <% if(service) {%>
         <div class="row">
           <% service.forEach((serv) => { %>
           <div class="col-md-4">
@@ -80,6 +82,7 @@
          
         </div>
       </div>
+      <% } %>
     </section><!-- End Services Section -->
 
     <!-- ======= Latest Properties Section ======= -->
@@ -101,6 +104,7 @@
         </div>
 
         <div id="property-carousel" class="swiper">
+          <% if(propertyal) {%>
           <div class="swiper-wrapper">
             <% propertyal.forEach((props) => { %>
             <div class="carousel-item-b swiper-slide">
@@ -153,6 +157,7 @@
             <% }) %><!-- End carousel item -->
 
           </div>
+          <% } %>
         </div>
         <div class="propery-carousel-pagination carousel-pagination"></div>
 
@@ -175,7 +180,7 @@
             </div>
           </div>
         </div>
-
+          <% if(land) {%>
         <div id="property-carousel" class="swiper">
           <div class="swiper-wrapper">
             <% land.forEach((props) => { %>
@@ -226,9 +231,11 @@
 
           </div>
         </div>
+        
         <div class="propery-carousel-pagination carousel-pagination"></div>
 
       </div>
+      <% } %>
     </section><!-- End Latest Properties Section -->
 
     <!-- ======= Agents Section ======= -->
@@ -335,7 +342,7 @@
             </div>
           </div>
         </div>
-
+        <% if(blog) {%>
         <div id="news-carousel" class="swiper">
           <div class="swiper-wrapper">
               <% blog.forEach((blogs) => { %>
@@ -370,6 +377,7 @@
 
         <div class="news-carousel-pagination carousel-pagination"></div>
       </div>
+      <% } %>
     </section><!-- End Latest News Section -->
 
     <!-- ======= Testimonials Section ======= -->

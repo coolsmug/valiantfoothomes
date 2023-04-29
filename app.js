@@ -32,6 +32,7 @@ const smtpPool = require('nodemailer-smtp-pool');
 const PORT = process.env.PORT || 5000;
 const SECRET = process.env.SESSION_SECRET;
 const connectDB = require('./services/database/connection');
+const PASSWORD_EMAIL = process.env.PASSWORD_EMAIL;
 connectDB();
 
 const app = express();
@@ -1412,7 +1413,7 @@ app.post('/send-single-email', contactAttachmentUpload.single('attachment'), asy
       port: 465,
       auth: {
         user: 'Valiantfoot@gmail.com',
-        pass: 'fcimwzmombmhkjyg'
+        pass: PASSWORD_EMAIL
       },
       pool: true, // Enable the use of a pooled connection
       maxConnections: 5, // Limit the number of simultaneous connections
@@ -1482,7 +1483,7 @@ app.post('/send-email', contactAttachmentUploads.single('attachment'), async (re
       port: 465,
       auth: {
         user: 'Valiantfoot@gmail.com',
-        pass: 'fcimwzmombmhkjyg'
+        pass: PASSWORD_EMAIL
       },
       pool: true, // Enable the use of a pooled connection
       maxConnections: 5, // Limit the number of simultaneous connections

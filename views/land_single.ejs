@@ -3,7 +3,7 @@
 <%- include ("./dash_include/HEADER_GEN.ejs") %>
 
   <main id="main">
-
+<% if(prop) {%>
     <!-- ======= Intro Single ======= -->
     <section class="intro-single">
       <div class="container">
@@ -164,6 +164,7 @@
                 <div class="col-md-6 col-lg-4">
                   <img src="data:Binary?<%= staff.img.contentType %>;base64,<%= staff.img.data.toString('base64') %>"  alt="" class="img-fluid">
                 </div>
+                <% } %>
                 <div class="col-md-6 col-lg-4">
                   <div class="property-agent">
                    

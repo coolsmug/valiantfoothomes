@@ -2,7 +2,7 @@
 <%- include ('./dash_include/HEADER_GEN.ejs') %>
 
   <main id="main">
-
+<% if(service) {%>
     <!-- ======= Intro Single ======= -->
     <section class="intro-single">
       <div class="container">
@@ -37,7 +37,7 @@
               <img src="data:Binary?<%= service.img.contentType %>;base64,<%= service.img.data.toString('base64') %>" alt="" class="img-fluid">
             </div>
             <div class="sinse-box">
-              <h3 class="sinse-title"><%= about.company_name %>
+              <h3 class="sinse-title">Valiantfoot Limited
                 <span></span>
                 <br> Since 2017
               </h3>
@@ -71,7 +71,7 @@
         </div>
       </div>
     </section>
-
+<% } %>
     <!-- =======Team Section ======= -->
    
 
