@@ -1,6 +1,1 @@
-Thanks for downloading this template!
-
-Template Name: EstateAgency
-Template URL: https://bootstrapmade.com/real-estate-agency-bootstrap-template/
-Author: BootstrapMade.com
-License: https://bootstrapmade.com/license/
+An Estate Management web Applicarion with full Email system. Properties can be assign to each Of the Compant Agents and when a single property is view An agent assigned to the property will been seen with all his information and how to reach him/he ron his social media handles.
