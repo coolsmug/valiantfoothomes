@@ -5,14 +5,17 @@ const staffSchema = new Schema ({
     first_name : {
         type: String,
         required: true,
+         trim: true
     },
     second_name: {
         type: String,
         required: true,
+         trim: true
     },
     position: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
 
     propid: [
@@ -34,33 +37,40 @@ const staffSchema = new Schema ({
     performance:{
         type: String,
         required: true,
+         trim: true
     },
     phone: {
         type: String,
-       
+        trim: true
     },
     about: {
         type: String,
         required: true,
+         trim: true
     },
     linkedin: {
         type: String,
+         trim: true
         
     },
     facebook: {
         type: String,
+         trim: true
         
     },
     instagram: {
         type: String,
+         trim: true
         
     },
     twitter: {
         type: String,
+         trim: true
         
     },
     whatsapp: {
         type: String,
+         trim: true
         
     },
     img:{

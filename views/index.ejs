@@ -23,7 +23,7 @@
                       <br> <%= prop.location %>
                     </h1>
                     <p class="intro-subtitle intro-price">
-                      <a href="#"><span class="price-a"><%= prop.status%> | $ 12.000</span></a>
+                      <a href="#"><span class="price-a"><%= prop.status%> | &#8358;</span></a>
                     </p>
                   </div>
                 </div>
@@ -122,7 +122,7 @@
                     </div>
                     <div class="card-body-a">
                       <div class="price-box d-flex">
-                        <span class="price-a"><%= props.status%> | $ 12.000</span>
+                        <span class="price-a"><%= props.status%> | &#8358; </span>
                       </div>
                       <a href="/property_single?id=<%= props._id %>" class="link-a">Click here to view
                         <span class="bi bi-chevron-right"></span>
@@ -199,7 +199,7 @@
                     </div>
                     <div class="card-body-a">
                       <div class="price-box d-flex">
-                        <span class="price-a"><%= props.status%> | $ 12.000</span>
+                        <span class="price-a"><%= props.status%> | &#8358;</span>
                       </div>
                       <a href="/land_single?id=<%= props._id %>" class="link-a">Click here to view
                         <span class="bi bi-chevron-right"></span>
@@ -393,15 +393,17 @@
           </div>
         </div>
 
+        <% if(test) {%>
         <div id="testimonial-carousel" class="swiper">
           <div class="swiper-wrapper">
-
+            
+              <% test.forEach((test) => { %>
             <div class="carousel-item-a swiper-slide">
               <div class="testimonials-box">
                 <div class="row">
                   <div class="col-sm-12 col-md-6">
                     <div class="testimonial-img">
-                      <img src="/img/testimonial-1.jpg" alt="" class="img-fluid">
+                      <img src="data:Binary?<%= test.img.contentType %>;base64,<%= test.img.data.toString('base64') %>" alt="" class="img-fluid">
                     </div>
                   </div>
                   <div class="col-sm-12 col-md-6">
@@ -410,47 +412,23 @@
                     </div>
                     <div class="testimonials-content">
                       <p class="testimonial-text">
-                       Leaving my country to start a new life in another terrain would not have been. Lovely home with cool environment, I love my Engagement with Valiantfoot Limited
+                      <%= test.testimony %>
                       </p>
                     </div>
                     <div class="testimonial-author-box">
-                      <img src="assets/img/mini-testimonial-1.jpg" alt="" class="testimonial-avatar">
-                      <h5 class="testimonial-author">Albert & Erika</h5>
+                      <img src="data:Binary?<%= test.img.contentType %>;base64,<%= test.img.data.toString('base64') %>" alt="" class="testimonial-avatar">
+                      <h5 class="testimonial-author"><%= test.full_name %></h5>
                     </div>
                   </div>
                 </div>
               </div>
-            </div><!-- End carousel item -->
-
-            <div class="carousel-item-a swiper-slide">
-              <div class="testimonials-box">
-                <div class="row">
-                  <div class="col-sm-12 col-md-6">
-                    <div class="testimonial-img">
-                      <img src="/img/testimonial-2.jpg" alt="" class="img-fluid">
-                    </div>
-                  </div>
-                  <div class="col-sm-12 col-md-6">
-                    <div class="testimonial-ico">
-                      <i class="bi bi-chat-quote-fill"></i>
-                    </div>
-                    <div class="testimonials-content">
-                      <p class="testimonial-text">
-                       I cant believe i can experience the brilliancy on how Real Estate is operated in the United sate anywhere in the world. thanks to Valiantfoot Limited
-                      </p>
-                    </div>
-                    <div class="testimonial-author-box">
-                      <img src="/img/mini-testimonial-2.jpg" alt="" class="testimonial-avatar">
-                      <h5 class="testimonial-author">Pablo & Emma</h5>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div><!-- End carousel item -->
-
+            </div>
+            <% }) %><!-- End carousel item -->
+           
           </div>
         </div>
-        <div class="testimonial-carousel-pagination carousel-pagination"></div>
+        <% } %>
+      <div class="testimonial-carousel-pagination carousel-pagination"></div>
 
       </div>
     </section><!-- End Testimonials Section -->

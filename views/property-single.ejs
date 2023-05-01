@@ -44,7 +44,9 @@
                   <img src="data:Binary?<%= prop.img.contentType %>;base64,<%= prop.img.data.toString('base64') %>" alt="">
                 </div>
                 <div class="carousel-item-b swiper-slide">
-                  <img src="data:Binary?<%= prop.img.contentType %>;base64,<%= prop.img.data.toString('base64') %>" alt="">
+                  <% if(prop.img2) {%>
+                  <img src="data:Binary?<%= prop.img2.contentType %>;base64,<%= prop.img2.data.toString('base64') %>" alt="">
+                <% } %>
                 </div>
               </div>
             </div>
@@ -63,7 +65,7 @@
                       <span class="bi bi-cash">&#8358;</span>
                     </div>
                     <div class="card-title-c align-self-center">
-                      <h5 class="title-c">15000</h5>
+                      <h5 class="title-c">...</h5>
                     </div>
                   </div>
                 </div>

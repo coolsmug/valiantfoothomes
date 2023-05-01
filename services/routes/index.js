@@ -8,7 +8,8 @@ const Property = require("../models/properties");
 const About = require('../models/about');
 const Service = require('../models/services');
 const Contact = require('../models/contact');
-const Subscribers = require('../models/subscriber')
+const Subscribers = require('../models/subscriber');
+const Testimony = require('../models/testimoniy');
 
 
 // rendering and serving of data
@@ -53,6 +54,7 @@ router.get('/home', async (req, res) => {
         const propertyal = await Property.find().sort({ createdAt: -1 }).limit(4);
         const service = await Service.find().sort({ createdAt: -1 }).limit(4);
         const land = await Land.find().sort({ createdAt: -1 }).limit(4);
+        const test = await Testimony.find({}).sort({ createdAt : -1}).exec();
     
         res.render('index', {
         blog,
@@ -60,6 +62,7 @@ router.get('/home', async (req, res) => {
         propertyal,
         land,
         service,
+        test,
         });
     } catch (err) {
         console.error(err);
@@ -287,32 +290,35 @@ router.get('/lands/:page', async (req, res, next) => {
 
   //single land
 
-router.get("/land_single", async(req, res, next) => {
+  router.get("/land_single", async(req, res, next) => {
     try {
-        if(req.query) {
-            const id = req.query.id
+        if (req.query) {
+            const id = req.query.id;
             await Land.findById(id)
-                            .then((prop) => {
-                                console.log(prop.name)
-                                Staff.find({ landid: prop.name.trim() })
-                                    .then((staff) => {
-                                        
-                                        res.render("land_single", {
-                                            prop: prop,
-                                            staff: staff[0],
-                                        })
-                                    })
-                           
-                            }).catch((err) => {
-                                console.log(err)
-                                next(err)
-                            })
+                .then((prop) => {
+                    console.log(prop.name);
+                    Staff.find({ landid: prop.name })
+                        .then((staff) => {
+                            res.render("land_single", {
+                                prop: prop,
+                                staff: staff[0],
+                            });
+                        })
+                        .catch((err) => {
+                            console.log(err);
+                            next(err);
+                        });
+                })
+                .catch((err) => {
+                    console.log(err);
+                    next(err);
+                });
         }
     } catch (error) {
-        console.log(error)
-        next(error)
+        console.log(error);
+        next(error);
     }
-})
+});
 
 
 
@@ -388,7 +394,15 @@ router.post('/search', async (req, res) => {
       });
   });
   
-
+//testimony
+router.get('/feedback', async (req, res) => {
+  try {
+  
+    res.render('create_feedback')
+  } catch (error) {
+    console.log(error);
+  }
+})
 
 
 

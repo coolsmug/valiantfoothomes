@@ -10,11 +10,13 @@ const ServiceSchema = ({
     heading: {
         type: String,
         required: true,
+        trim: true
     },
 
     about: {
         type: String,
         required: true,
+        trim: true
     }
 })
 

@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const SubscriberSchema = new Schema ({
-    email: { type: String, required: true },
+    email: { type: String, required: true, trim: true },
     subscribedAt: { type: Date, default: Date.now }
 });
 

@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config()
+}
+
 const express = require('express');
 const router = express.Router();
 const Property = require("../models/properties");
@@ -12,9 +16,12 @@ const Subscriber = require('../models/subscriber');
 const { session } = require("passport");
 const passport = require('passport');
 var ensureLoggedIn  = require('connect-ensure-login').ensureLoggedIn;
-// const transporter = require('../config/nodemailer');
-// const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
+const Recovery = require('../models/recovery.js');
+const nodemailer = require('nodemailer');
+const smtpPool = require('nodemailer-smtp-pool');
 
+const PASSWORD_EMAIL = process.env.PASSWORD_EMAIL;
 const ensureAuthenticated = function(req, res, next) {
   if (req.isAuthenticated()) {
     return next()
@@ -264,6 +271,50 @@ router.get('/view-detail-house', ensureAuthenticated, async(req, res) => {
   }
 });
 
+  //Editting Properties
+  router.post("/edit-property/:id", async (req, res) => {
+    try {
+      const propertyId = req.params.id;
+      if (!propertyId) {
+        throw new TypeError("Invalid property ID");
+      }
+  
+      const property = {
+        name: req.body.name,
+        location: req.body.location,
+        status: req.body.status,
+        area: req.body.area,
+        bed: req.body.bed,
+        baths: req.body.baths,
+        garage: req.body.garage,
+        amenities: req.body.amenities.split(",").map(function (amenity) {
+          return amenity.trim();
+        }),
+        description: req.body.description,
+        period: req.body.period,
+      };
+  
+      const filter = { _id: propertyId };
+      const update = { $set: property };
+      const options = { returnOriginal: false };
+  
+      const result = await Property.findOneAndUpdate(filter, update, options);
+  
+      if (!result) {
+        return res.status(404).json({ error: "Property not found" });
+      }
+  
+      return res.json("Successfully updated property");
+    } catch (error) {
+      if (error.name === "CastError" || error.name === "TypeError") {
+        return res.status(400).json({ error: error.message });
+      }
+      console.log(error);
+      return res.status(500).send();
+    }
+  });
+  
+
 
 //Lands
 router.get("/land/:page", ensureAuthenticated, async(req, res, next) => {
@@ -330,6 +381,46 @@ router.get('/edit-land', ensureAuthenticated, async(req, res) => {
         }
     }
 });
+
+//Editting land Properties
+router.post("/edit-land/:id", async (req, res) => {
+    try {
+      const propertyId = req.params.id;
+      if (!propertyId) {
+        throw new TypeError("Invalid property ID");
+      }
+  
+      const property = {
+        name: req.body.name,
+        location: req.body.location,
+        status: req.body.status,
+        area: req.body.area,
+        amenities: req.body.amenities.split(",").map(function (amenity) {
+          return amenity.trim();
+        }),
+        description: req.body.description,
+        period: req.body.period,
+      };
+  
+      const filter = { _id: propertyId };
+      const update = { $set: property };
+      const options = { returnOriginal: false };
+  
+      const result = await Land.findOneAndUpdate(filter, update, options);
+  
+      if (!result) {
+        return res.status(404).json({ error: "Property not found" });
+      }
+  
+      return res.json("Successfully updated property");
+    } catch (error) {
+      if (error.name === "CastError" || error.name === "TypeError") {
+        return res.status(400).json({ error: error.message });
+      }
+      console.log(error);
+      return res.status(500).send();
+    }
+  });
 
 router.get('/view-detail-land', ensureAuthenticated, async(req, res) => {
   if (req.query.id) {
@@ -452,6 +543,43 @@ router.get('/edit-blog', ensureAuthenticated, async(req, res) => {
     }
 });
 
+// editting blog
+router.post("/edit-blog/:id", async(req, res, next) => {
+  try {
+     const {fullname, category, article, topic} = req.body;
+      const blogId = req.params.id;
+      if (!blogId) {
+       throw new TypeError("Invalid blog ID");
+     }
+
+     const blog = {
+       fullname: fullname,
+       category: category, 
+       article: article, 
+       topic: topic, 
+   };
+
+     const filter = { _id: blogId };
+     const update = { $set: blog };
+     const options = { returnOriginal: false };
+
+     const result = await Blog.findOneAndUpdate(filter, update, options);
+   
+     if (!result) {
+       return res.status(404).json({ error: "Blog not found" });
+     }
+ 
+     return res.json("Successfully updated Blog");
+   
+  } catch (error) {
+   if (error.name === "CastError" || error.name === "TypeError") {
+       return res.status(400).json({ error: error.message });
+     }
+      console.log (error);
+      return res.status(500).send();
+  }
+} )
+
  //deleting blog
  router.delete("/delete-blog/:id", async(req, res) => {
   const id = req.params.id;
@@ -474,6 +602,7 @@ router.get('/edit-blog', ensureAuthenticated, async(req, res) => {
     });
    
 });
+
 
 //admin
 router.get("/admin/:page", ensureAuthenticated, async(req, res, next) => {
@@ -540,6 +669,37 @@ router.get('/edit-admin', ensureAuthenticated, async(req, res) => {
         }
     }
 });
+
+// Editting Admin
+router.post("/edit-admin/:id", async(req, res, next) => {
+  try {
+      const id = req.params.id;
+      const { first_name, second_name, position, password, email, role} = req.body;
+
+      Admin.findById(id)
+                .then((user) => {
+          user.first_name = first_name;
+          user.second_name = second_name;
+          user.position = position;
+          user.email = email;
+          user.role = role;
+          user
+              .save()
+              .then((user) => {
+                  res.json("User updated!")
+              }).catch((err) =>{ 
+              console.log (err)
+                next(err)
+            })
+      }).catch((err) => {
+        console.log(err);
+        next(err)
+      })
+      
+  } catch (error) {
+      console.log (error)
+  }
+} );
 
 router.patch('/admin-status/:id', async (req, res) => {
   const id = req.params.id;
@@ -922,10 +1082,10 @@ router.get('/edit-service', ensureAuthenticated, async(req, res) => {
 
 router.post("/edit-service/:id", async (req, res) => {
   const id = req.params.id;
-  const {heading, service} = req.body;
+  const {heading, about} = req.body;
   
   try {
-    await Service.updateOne({ _id: id}, {$set: {heading: heading, service: service}})
+    await Service.updateOne({ _id: id}, {$set: {heading: heading, about: about}})
     res.redirect(`/admin/edit-service?id=${id}`);
   } catch (error) {
     console.error(error);
@@ -1053,6 +1213,288 @@ router.get('/replying', ensureAuthenticated, async(req, res) => {
   }
 })
 
+// Manage password changing
+
+router.get('/change-password',ensureAuthenticated, async (req, res) => {
+  try {
+    await 
+    res.render('change_password', {
+      user: req.user,
+    })
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+router.post('/password', ensureAuthenticated, async(req, res) => {
+
+  const {passwords, email, passwording} = req.body;
+  let errors = [];
+
+  if (!passwords || !email || !passwording) {
+    errors.push( { msg: "Please fill in the field"} );
+  }
+
+  if ( passwording.length < 6) {
+    errors.push({ msg: "password atleast 6 character" });
+  }
+
+  if ( passwords.length < 6) {
+    errors.push({ msg: "Your previous password is incorrect!" });
+  }
+
+  if ( passwording == passwords) {
+    errors.push({ msg: "Password provided are the same use different password" });
+  }
+  if (errors.length > 0) {
+
+      res.render('change_password', {
+        errors: errors,
+        email: email,
+        passwords : passwords,
+        passwording: passwording,
+      
+      })
+   
+  
+  } else{
+    Admin.findOne({ email : email}).then((user) => {
+
+      if (!user) {
+            errors.push( { msg : "Oops! no User associated with that email"});
+              res.render('change_password', {
+                errors: errors,
+                email: email,
+                passwords : passwords,
+                passwording: passwording,
+               
+              })
+            
+      } if(user) {
+       Admin.find({password : passwords})
+    
+        .then((user)=> {
+          if(!user){
+            errors.push( { msg : "Oops! Password Incorrect"});
+              res.render('change_password', {
+                errors: errors,
+                email: email,
+                passwords : passwords,
+                passwording: passwording,
+               
+              })
+           
+        }else {
+         Admin.findOne({ email : email})
+            .then((user) => {
+              user.password = passwording;
+              bcrypt.genSalt(10, (err, salt) =>
+              bcrypt.hash(user.password, salt,
+                  (err, hash) => {
+                      if (err) throw err;
+
+                      user.password = hash;
+
+                      user
+                      .save()
+                          .then((value) => {
+                              console.log(value)
+                              req.flash(
+                                "success_msg",
+                                "Password Changed Successfully!"
+                              );
+                              res.redirect(`/admin/change-password`);
+                          })
+                          .catch(value => console.log(value))
+                  }))
+             
+            })
+        }})
+                  
+
+      }
+    }).catch((err) => {
+      console.log(err)
+    })
+              
+  }
+  
+
+    
+})
+
+
+// Reovering password Settings .............................
+
+router.get('/forget-password', async (req, res) => {
+  try {
+    await 
+    res.render('forget_password')
+  } catch (error) {
+    console.log(error)
+  }
+});
+
+router.post('/password-new', async (req, res) => {
+  const { email } = req.body;
+  let errors = [];
+
+  if (!email) {
+    errors.push({ msg: "Please fill in the field" });
+  }
+
+  if (errors.length > 0) {
+    res.render('forget_password', {
+      errors: errors,
+      email: email,
+    })
+  } else {
+    try {
+      const user = await Admin.findOne({ email: email });
+      if (!user) {
+        errors.push({ msg: "Oops! no User associated with that email" });
+        res.render('forget_password', {
+          errors: errors,
+          email: email,
+        });
+      } else {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let voucherCode = '';
+        for (let i = 0; i < 6; i++) {
+          voucherCode += characters.charAt(Math.floor(Math.random() * characters.length));
+        }
+        const code = await new Recovery({ recovery: "Valiantfoot-"+voucherCode }).save();
+        const html = `
+          <html>
+            <head>
+              <style>
+                /* Define your CSS styles here */
+                body {
+                  font-family: Arial, sans-serif;
+                  font-size: 16px;
+                  color: #333;
+                }
+                h2 {
+                  color: #ff0000;
+                }
+                p {
+                  line-height: 1.5;
+                }
+              </style>
+            </head>
+            <body>
+              <img src="/assets/img/Valiant-01.png" alt="Company Logo">
+              <h2>Valiantfoot Recovery Code</h2>
+              <p>${code.recovery}</p>
+            </body>
+          </html>
+        `;
+        const mailOptions = {
+          from: 'Valiantfoot@gmail.com',
+          to: user.email,
+          subject: 'Use the below Code to recover your Password',
+          html: html
+        };
+        const smtpConfig = {
+          host: 'smtp.gmail.com',
+          port: 465,
+          auth: {
+            user: 'Valiantfoot@gmail.com',
+            pass: PASSWORD_EMAIL,
+          },
+          pool: true,
+          maxConnections: 5,
+          maxMessages: 100,
+          rateDelta: 1000,
+          rateLimit: 1000,
+        };
+        const transporter = nodemailer.createTransport(smtpPool(smtpConfig));
+        await transporter.sendMail(mailOptions);
+        req.flash('success_msg', 'Recovery Code sent to the Email you provided');
+        res.redirect('/admin/recover-password');
+      }
+    } catch (err) {
+      console.log(err);
+      res.render('forget_password', {
+        errors: [{ msg: "An error occurred while processing your request. Please try again later." }],
+        email: email,
+      });
+    }
+  }
+});
+
+
+//code from Email
+
+router.get('/recover-password', async (req, res) => {
+  try {
+    await 
+    res.render('recover_password')
+  } catch (error) {
+    console.log(error)
+  }
+});
+
+router.post('/password-reset', async(req, res) => {
+  const { email, recoveryCode, newPassword } = req.body;
+  let errors = [];
+
+  if (!email || !recoveryCode || !newPassword) {
+    errors.push( { msg: "Please fill in all fields"} );
+  }
+
+  if (errors.length > 0) {
+    res.render('recover_password', {
+      errors: errors,
+      email: email,
+      recoveryCode: recoveryCode,
+      newPassword: newPassword,
+    });
+  } else {
+    // Find the recovery code in the database
+    await Recovery.findOne({ recovery: recoveryCode }).then((recovery) => {
+      if (!recovery) {
+        // If the recovery code doesn't exist, show an error message
+        errors.push( { msg : "Invalid recovery code"});
+        res.render('recover_password', {
+          errors: errors,
+          email: email,
+          recoveryCode: recoveryCode,
+          newPassword: newPassword,
+        });
+      } else if (recovery.isUsed == true) {
+        // If the recovery code has already been used, show an error message
+        errors.push( { msg : "This recovery code has already been used."});
+        res.render('recover_password', {
+          errors: errors,
+          email: email,
+          recoveryCode: recoveryCode,
+          newPassword: newPassword,
+        });
+      } else {
+        // If the recovery code exists and hasn't been used, update the admin's password in the database
+        Admin.findOne({ email: email }).then((admin) => {
+          bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(newPassword, salt, (err, hash) => {
+              if (err) throw err;
+              admin.password = hash;
+              admin.save().then(() => {
+                // Update the recovery code in the database to show that it has been used
+                recovery.isUsed = true;
+                recovery.save().then(() => {
+                  req.flash('success_msg', 'Your password has been reset. Please log in.');
+                  res.redirect('/admin/login');
+                });
+              });
+            });
+          });
+        });
+      }
+    }).catch((err) => {
+      console.log(err)
+    });
+  }
+});
 
 
 module.exports = router;

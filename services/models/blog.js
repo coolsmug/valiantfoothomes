@@ -5,18 +5,22 @@ const BlogSchema = new Schema ({
   fullname : {
       type: String,
       required: true,
+      trim: true
   },
   category: {
       type: String,
       required: true,
+      trim: true
   },
   article: {
       type: String,
-      required: true
+      required: true,
+      trim: true
   },
   topic: {
       type: String,
       required: true,
+      trim: true
   },
   date: {
       type: Date,

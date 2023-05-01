@@ -6,27 +6,33 @@ const landSchema = new Schema ({
     property_id : {
         type: String,
         required: true,
+         trim: true
     },
     name : {
         type: String,
         required: true,
+         trim: true
     },
     location : {
         type: String,
         required: true,
+         trim: true
     },
     status : {
         type: String,
         required: true,
+         trim: true
     },
     period : {
         type: String,
         required: true,
+         trim: true
     },
 
     area : {
         type: String,
         required: true,
+         trim: true
     },
 
     amenities : [
@@ -36,6 +42,7 @@ const landSchema = new Schema ({
     description : {
         type: String,
         required: true,
+         trim: true
     },
 
     img: { 

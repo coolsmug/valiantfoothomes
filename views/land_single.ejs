@@ -63,7 +63,7 @@
                       <span class="bi bi-cash">&#8358;</span>
                     </div>
                     <div class="card-title-c align-self-center">
-                      <h5 class="title-c">15000</h5>
+                      <h5 class="title-c">...</h5>
                     </div>
                   </div>
                 </div>
@@ -150,7 +150,7 @@
               </div>
             </div>
           </div>
-
+<% } %>
           <div class="col-md-12">
             <div class="row section-t3">
               <div class="col-sm-12">
@@ -159,12 +159,13 @@
                 </div>
               </div>
             </div>
-            <% if(staff) {%>
+            
+            <% if (staff) {%>
               <div class="row">
                 <div class="col-md-6 col-lg-4">
                   <img src="data:Binary?<%= staff.img.contentType %>;base64,<%= staff.img.data.toString('base64') %>"  alt="" class="img-fluid">
                 </div>
-                <% } %>
+               
                 <div class="col-md-6 col-lg-4">
                   <div class="property-agent">
                    

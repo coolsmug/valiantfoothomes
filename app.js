@@ -22,7 +22,8 @@ const Admin = require("./services/models/admin");
 const Staff = require('./services/models/staff');
 const About = require('./services/models/about');
 const Service = require('./services/models/services');
-const Subscriber = require('./services/models/subscriber')
+const Subscriber = require('./services/models/subscriber');
+const Testimony = require('./services/models/testimoniy');
 // const transporter = require('./services/config/nodemailer');
 const nodemailer = require('nodemailer')
 const smtpPool = require('nodemailer-smtp-pool');
@@ -340,50 +341,7 @@ app.use((error, req, res, next) => {
     }
   });
 
-  
-  //Editting Properties
-  app.post("/edit-property/:id", async (req, res) => {
-    try {
-      const propertyId = req.params.id;
-      if (!propertyId) {
-        throw new TypeError("Invalid property ID");
-      }
-  
-      const property = {
-        name: req.body.name,
-        location: req.body.location,
-        status: req.body.status,
-        area: req.body.area,
-        bed: req.body.bed,
-        baths: req.body.baths,
-        garage: req.body.garage,
-        amenities: req.body.amenities.split(",").map(function (amenity) {
-          return amenity.trim();
-        }),
-        description: req.body.description,
-        period: req.body.period,
-      };
-  
-      const filter = { _id: propertyId };
-      const update = { $set: property };
-      const options = { returnOriginal: false };
-  
-      const result = await Property.findOneAndUpdate(filter, update, options);
-  
-      if (!result) {
-        return res.status(404).json({ error: "Property not found" });
-      }
-  
-      return res.json("Successfully updated property");
-    } catch (error) {
-      if (error.name === "CastError" || error.name === "TypeError") {
-        return res.status(400).json({ error: error.message });
-      }
-      console.log(error);
-      return res.status(500).send();
-    }
-  });
-  
+
 
   //updating Images
   const uploadMultipleImages = upload.fields([
@@ -452,7 +410,7 @@ app.post("/edit-property-image/:id", uploadMultipleImages, async (req, res) => {
     if (!result) {
       return res.status(404).json({ error: "Property not found" });
     }
-
+    req.flash("success_msg", "Images Uploaded");
     return res.redirect('/admin/edit-property?id=' + propertyId);
   } catch (error) {
     if (error.name === "CastError" || error.name === "TypeError") {
@@ -538,42 +496,6 @@ app.post('/create-blog',ensureAuthenticated, uploadMultipleBlog, async (req, res
   }
 } )
 
-// editting blog
-app.post("/edit-blog/:id", async(req, res, next) => {
-   try {
-      const {fullname, category, article, topic} = req.body;
-       const blogId = req.params.id;
-       if (!blogId) {
-        throw new TypeError("Invalid blog ID");
-      }
-
-      const blog = {
-        fullname: fullname,
-        category: category, 
-        article: article, 
-        topic: topic, 
-    };
-
-      const filter = { _id: blogId };
-      const update = { $set: blog };
-      const options = { returnOriginal: false };
-
-      const result = await Blog.findOneAndUpdate(filter, update, options);
-    
-      if (!result) {
-        return res.status(404).json({ error: "Blog not found" });
-      }
-  
-      return res.json("Successfully updated Blog");
-    
-   } catch (error) {
-    if (error.name === "CastError" || error.name === "TypeError") {
-        return res.status(400).json({ error: error.message });
-      }
-       console.log (error);
-       return res.status(500).send();
-   }
-} )
 
 
 const uploadMultipleBlogs = upload.fields([
@@ -622,7 +544,7 @@ app.post("/edit-blog-image/:id", uploadMultipleBlogs, async(req, res, next) => {
         if (!results) {
           return res.status(404).json({ error: "blog not found" });
         }
-    
+        req.flash("success_msg", "Images Uploaded");
         return res.redirect('/admin/edit-blog?id=' + blogId);
     } catch (error) {
         if (error.name === "CastError" || error.name === "TypeError") {
@@ -735,36 +657,6 @@ app.post('/create-admins',ensureAuthenticated, uploadSingleAdminImage , async(re
     }
 });
 
-// Editting Admin
-app.post("/edit-admin/:id", async(req, res, next) => {
-  try {
-      const id = req.params.id;
-      const { first_name, second_name, position, password, email, role} = req.body;
-
-      Admin.findById(id)
-                .then((user) => {
-          user.first_name = first_name;
-          user.second_name = second_name;
-          user.position = position;
-          user.email = email;
-          user.role = role;
-          user
-              .save()
-              .then((user) => {
-                  res.json("User updated!")
-              }).catch((err) =>{ 
-              console.log (err)
-                next(err)
-            })
-      }).catch((err) => {
-        console.log(err);
-        next(err)
-      })
-      
-  } catch (error) {
-      console.log (error)
-  }
-} );
 
 
 const uploadSingleAdminImages = upload.single("img");
@@ -783,6 +675,7 @@ app.post("/edit-admin-image/:id", uploadSingleAdminImages, async(req, res, next)
                 admins.save()
                 .then((value) => {
                     console.log (value);
+                    req.flash("success_msg", "Images Uploaded");
                     return res.redirect('/admin/edit-admin?id=' + id)
                 }).catch((err) => {
                     console.log (err);
@@ -884,6 +777,7 @@ app.post("/edit-info-image/:id", uploadSingleAdminAboutSingle, async(req, res, n
               about.save()
               .then((value) => {
                   console.log (value);
+                  req.flash("success_msg", "Images Uploaded");
                   return res.redirect('/admin/edit-info?id=' + id)
 
               }).catch((err) => {
@@ -961,6 +855,7 @@ app.post("/edit-service-image/:id", uploadSingleAdminServiceSingle, async(req, r
               service.save()
               .then((value) => {
                   console.log (value);
+                  req.flash("success_msg", "Images Uploaded");
                   return res.redirect('/admin/edit-service?id=' + id)
               }).catch((err) => {
                   console.log (err);
@@ -1089,6 +984,7 @@ app.post("/edit-staff-image/:id", uploadSingleStaffImages, async(req, res, next)
                           };
                 staffs.save()
                 .then((value) => {
+                  req.flash("success_msg", "Images Uploaded");
                     return res.redirect('/admin/edit-staff?id=' + id)
                 }).catch((err) => {
                     console.log (err);
@@ -1259,48 +1155,6 @@ app.post("/edit-staff-image/:id", uploadSingleStaffImages, async(req, res, next)
     }
   });
 
-  
-  //Editting land Properties
-  app.post("/edit-land/:id", async (req, res) => {
-    try {
-      const propertyId = req.params.id;
-      if (!propertyId) {
-        throw new TypeError("Invalid property ID");
-      }
-  
-      const property = {
-        name: req.body.name,
-        location: req.body.location,
-        status: req.body.status,
-        area: req.body.area,
-        amenities: req.body.amenities.split(",").map(function (amenity) {
-          return amenity.trim();
-        }),
-        description: req.body.description,
-        period: req.body.period,
-      };
-  
-      const filter = { _id: propertyId };
-      const update = { $set: property };
-      const options = { returnOriginal: false };
-  
-      const result = await Land.findOneAndUpdate(filter, update, options);
-  
-      if (!result) {
-        return res.status(404).json({ error: "Property not found" });
-      }
-  
-      return res.json("Successfully updated property");
-    } catch (error) {
-      if (error.name === "CastError" || error.name === "TypeError") {
-        return res.status(400).json({ error: error.message });
-      }
-      console.log(error);
-      return res.status(500).send();
-    }
-  });
-  
-
   //updating Images
   const uploadMultipleLandImages = upload.fields([
     { name: 'img', maxCount: 1 },
@@ -1349,7 +1203,7 @@ app.post("/edit-land-image/:id", uploadMultipleLandImages, async (req, res) => {
     if (!result) {
       return res.status(404).json({ error: "Property not found" });
     }
-
+    req.flash("success_msg", "Images Uploaded");
     return res.redirect('/admin/edit-land?id=' + propertyId);
   } catch (error) {
     if (error.name === "CastError" || error.name === "TypeError") {
@@ -1359,6 +1213,52 @@ app.post("/edit-land-image/:id", uploadMultipleLandImages, async (req, res) => {
     return res.status(500).send();
   }
 });
+
+
+//testimony
+const uploadMultipletesty =  upload.single("img");
+app.post('/create-testimony', uploadMultipletesty, async(req, res, next) => {
+  try {
+      const { full_name, testimony} = req.body;
+      const errors = [];
+    
+      if (!full_name || !testimony ) {
+          errors.push( { msg : "Please fill in all fields." } );
+      };
+  
+      if(errors.length > 0){
+          res.render('create_feedback', {
+              errors: errors,
+              full_name: full_name,
+              testimony: testimony,
+          } )
+      } else {
+          const newTestimony = new Testimony({
+            full_name: full_name,
+            testimony: testimony,
+            img: img = {
+              data: fs.readFileSync(
+                  path.join( __dirname + "/uploads/" + req.file.filename)
+              ),
+              contentType: "image/png",
+              },
+          })
+
+          newTestimony
+                .save()
+                .then((value) => {
+                  console.log(value)
+                  req.flash("success_msg", "Testimony sent Successfully!, thank you for doing business with us.");
+                  res.redirect("/feedback")
+                })
+                .catch((err) => console.log(err))
+      }
+  } catch (error) {
+      console.log(error)
+      next(error)
+  }
+});
+
 
 
 //replying to contact 

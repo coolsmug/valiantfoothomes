@@ -6,38 +6,47 @@ const propertySchema = new Schema ({
     property_id : {
         type: String,
         required: true,
+        trim: true
     },
     name : {
         type: String,
         required: true,
+        trim: true
     },
     location : {
         type: String,
         required: true,
+        trim: true
     },
     status : {
         type: String,
         required: true,
+         trim: true
     },
     period : {
         type: String,
         required: true,
+         trim: true
     },
     area : {
         type: String,
         required: true,
+         trim: true
     },
     bed : {
         type: String,
         required: true,
+         trim: true
     },
     baths : {
         type: String,
         required: true,
+         trim: true
     },
     garage : {
         type: String,
         required: true,
+         trim: true
     },
     amenities : [
          String
@@ -46,6 +55,7 @@ const propertySchema = new Schema ({
     description : {
         type: String,
         required: true,
+         trim: true
     },
     img: { 
     data: Buffer,

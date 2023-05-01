@@ -226,7 +226,7 @@ $("#propertyOnly").submit(function (param) {
   console.log(data);
 
   var requests = {
-    "url" : `/edit-property/${data.id}`,
+    "url" : `/admin/edit-property/${data.id}`,
     "method" : "POST",
     "data" : data,
   };
@@ -250,7 +250,7 @@ $("#landOnly").submit(function (param) {
   console.log(data);
 
   var requests = {
-    "url" : `/edit-land/${data.id}`,
+    "url" : `/admin/edit-land/${data.id}`,
     "method" : "POST",
     "data" : data,
   };
@@ -274,7 +274,7 @@ $("#Blog").submit(function (param) {
   console.log(data);
 
   var requests = {
-    "url" : `/edit-blog/${data.id}`,
+    "url" : `/admin/edit-blog/${data.id}`,
     "method" : "POST",
     "data" : data,
   };
@@ -298,7 +298,7 @@ $("#Admin").submit(function (param) {
   console.log(data);
 
   var requests = {
-    "url" : `/edit-admin/${data.id}`,
+    "url" : `/admin/edit-admin/${data.id}`,
     "method" : "POST",
     "data" : data,
   };
